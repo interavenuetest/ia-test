@@ -1,7 +1,7 @@
 # To get started:
 
-* clone this repo
-* `vagrant up`
+* `https://github.com/interavenuetest/ia-test.git`
+* `cd ia-test && vagrant up`
 
 The whole process takes a while, especially if you don't have the box image locally already. on my 4G MBP it takes 20ish minutes
 What it does step by step is:
