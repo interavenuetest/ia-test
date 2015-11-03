@@ -1,0 +1,13 @@
+standard-lxc:
+  - nginx1:
+      minion:
+        master: 10.0.3.1
+        grains:
+          roles:
+            - web
+  - nginx2:
+      minion:
+        master: 10.0.3.1
+        grains:
+          roles:
+            - web

@@ -1,0 +1,59 @@
+global
+  log /dev/log local0
+  maxconn 256
+  user haproxy
+  group haproxy
+  daemon
+  pidfile /var/run/haproxy/haproxy.pid
+  tune.bufsize 16384
+
+defaults
+  log global
+  mode http
+  option httplog
+  option dontlognull
+  option redispatch
+  option forwardfor
+  option httpclose # needed for empty reponse body 204's
+  timeout client 30s
+  timeout server 30s
+  timeout connect 1s
+  timeout http-keep-alive 60s
+  timeout http-request 30s
+
+  stats enable
+  stats refresh 10s
+  stats uri /haproxy_stats
+  stats auth {{ salt['pillar.get']('haproxy:stats_user', 'admin') }}:{{ salt['pillar.get']('haproxy:stats_password', 'pass123') }}
+
+frontend phpapp
+  # Require TLS with AES
+  bind :::443 ssl crt /etc/haproxy/phpapp.pem no-sslv3 ciphers AES128-SHA:AES256-SHA
+  default_backend phpapp
+  reqadd X-Forwarded-Proto:\ https
+
+  bind :::80
+  redirect scheme https if !{ ssl_fc }
+
+backend phpapp
+  option httpchk GET /
+  balance {{ salt['pillar.get']('haproxy:balance_method', 'roundrobin') }}
+
+{% for server, addrs in salt['mine.get']('G@role:web', 'network.ip_addrs', expr_form='compound').items() %}
+server {{ server }} {{ addrs[0] }}:80 check maxconn 40
+{% endfor %}
+
+frontend elk
+  # Require TLS with AES
+  bind :::5600 ssl crt /etc/haproxy/phpapp.pem no-sslv3 ciphers AES128-SHA:AES256-SHA
+  default_backend elk
+  reqadd X-Forwarded-Proto:\ https
+  redirect scheme https if !{ ssl_fc }
+
+backend elk
+  option httpchk GET /
+  balance source
+
+{% for server, addrs in salt['mine.get']('G@role:elk', 'network.ip_addrs', expr_form='compound').items() %}
+server {{ server }} {{ addrs[0] }}:5601 check maxconn 40
+{% endfor %}

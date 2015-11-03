@@ -1,0 +1,19 @@
+{
+  # The network section covers network configuration :)
+  "network": {
+    "servers": [ "10.0.3.31:5043" ],
+    "ssl ca": "/etc/pki/tls/certs/logstash-forwarder.crt",
+    "timeout": 15
+  },
+
+  # The list of files configurations
+  "files": [
+        {
+          "paths": [
+            "/var/log/nginx/access.log"
+           ],
+          "fields": { "type": "nginx-access" }
+        }
+
+  ]
+}
