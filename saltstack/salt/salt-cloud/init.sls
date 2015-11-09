@@ -31,4 +31,5 @@ salt_cloud_provision_{{ container }}:
   cloud.profile:
     - profile: standard-lxc
     - name: {{ container }}
+    - script: /etc/salt/cloud.deploy.d/bootstrap-salt.sh
 {% endfor %}
