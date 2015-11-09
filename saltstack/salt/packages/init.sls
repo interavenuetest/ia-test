@@ -13,7 +13,7 @@ common_packages:
       - python-ipy
       - python-requests
 
-{% for directory in 'cloud.profiles.d', 'cloud.providers.d', 'cloud.maps.d' %}
+{% for directory in 'cloud.profiles.d', 'cloud.providers.d', 'cloud.maps.d', 'cloud.deploy.d' %}
 salt_cloud_dirs_{{ directory }}:
   file.directory:
     - name: /etc/salt/{{ directory }}

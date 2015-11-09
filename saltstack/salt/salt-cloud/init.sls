@@ -13,11 +13,18 @@ ia_map_conf:
     - name: /etc/salt/cloud.maps.d/ia.map
     - source: salt://salt-cloud/files/etc/salt/cloud.maps.d/ia.map
 
+bootstrap_script:
+  file.managed:
+    - name: /etc/salt/cloud.deploy.d/bootstrap-salt.sh
+    - source: salt://salt-cloud/files/etc/salt/cloud.deploy.d/bootstrap-salt.sh
+    - makedirs: True
+
 salt_cloud_provision_elk:
   cloud.profile:
     - profile: elk-lxc
     - name: elk
     - ip: 10.0.3.31
+    - script: /etc/salt/cloud.deploy.d/bootstrap-salt.sh
 
 {% for container in 'nginx1', 'nginx2' %}
 salt_cloud_provision_{{ container }}:
